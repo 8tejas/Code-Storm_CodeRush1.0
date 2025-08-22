@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>EEG Schizophrenia Classifier</title>
+</head>
+<body>
+  <h2>Upload EEG (.edf) File</h2>
+  <form action="/predict" method="post" enctype="multipart/form-data">
+    <input type="file" name="file" accept=".edf" required>
+    <button type="submit">Upload & Predict</button>
+  </form>
+</body>
+</html>
