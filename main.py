@@ -49,12 +49,12 @@ def preprocess_edf(file_path):
 @app.route("/predict", methods=["POST"])
 def predict():
     if "file" not in request.files:
-        return jsonify({"error": "No file uploaded"}), 400
+        return render_template("result.html", label="Error", confidence="No file uploaded")
 
     file = request.files["file"]
 
     if file.filename == "":
-        return jsonify({"error": "No selected file"}), 400
+        return render_template("result.html", label="Error", confidence="No file selected")
 
     file_path = os.path.join("uploads", file.filename)
     os.makedirs("uploads", exist_ok=True)
@@ -65,10 +65,10 @@ def predict():
 
     # Predict
     preds = model.predict(X)
-    result = "Schizophrenic" if preds[0][0] > 0.5 else "Healthy"
+    confidence = float(preds[0][0])  # raw probability
+    result = "Schizophrenic" if confidence > 0.5 else "Healthy"
 
-    return jsonify({"prediction": result, "raw_output": preds.tolist()})
-
+    return render_template("result.html", label=result, confidence=confidence)
 @app.route("/signup", methods=["POST"])
 def signup():
     data = request.get_json()

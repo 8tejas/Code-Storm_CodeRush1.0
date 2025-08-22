@@ -1,12 +1,76 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Prediction Result</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prediction Result - CortiCare</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <style>
+    /* Full page gradient background */
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #bc9ffd, #fc88fc);
+      font-family: Arial, sans-serif;
+    }
+
+    /* Centered result card */
+    .result-container {
+      background: #ffffffcc;
+      padding: 2rem;
+      border-radius: 16px;
+      width: 400px;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      backdrop-filter: blur(10px);
+    }
+
+    .result-title {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #fc88fc;
+      margin-bottom: 1.5rem;
+      letter-spacing: 1px;
+    }
+
+    .result-text {
+      font-size: 1.1rem;
+      margin: 1rem 0;
+      color: #333;
+    }
+
+    .highlight {
+      color: #bc9ffd;
+      font-weight: bold;
+    }
+
+    a.button-link {
+      display: inline-block;
+      margin-top: 1.5rem;
+      padding: 0.8rem 1.5rem;
+      background: #bc9ffd;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    a.button-link:hover {
+      background: #fc88fc;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+  </style>
 </head>
 <body>
-  <h2>Prediction Result</h2>
-  <p>Diagnosis: <strong>{{ label }}</strong></p>
-  <p>Confidence: {{ confidence | round(3) }}</p>
-  <a href="/">Try another file</a>
+  <div class="result-container">
+    <h2 class="result-title">Prediction Result</h2>
+    <p class="result-text">Diagnosis: <span class="highlight">{{ label }}</span></p>
+    <p class="result-text">Confidence: <span class="highlight">{{ confidence | round(3) }}</span></p>
+    <a href="/upload" class="button-link">🔄 Try another file</a>
+  </div>
 </body>
 </html>
