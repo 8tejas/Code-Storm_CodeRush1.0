@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CortiCare Login</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amita:wght@400;700&family=Luxurious+Roman&family=Unna:ital,wght@0,400;0,700;1,400;1,700&family=Baloo+2:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+</head>
+<body>
+  <div class="login-container">
+
+    <!-- Logo + Branding -->
+    <div class="logo-box"></div>
+    <h1 class="project-name">CORTICARE</h1>
+    <p class="tagline">Detect. Track. Understand.</p>
+
+    <!-- Login Section -->
+    <h2>Login</h2>
+    <p>Your safe space for support & resources</p>
+
+    <form id="login-form">
+      <input type="email" id="login-email" placeholder="Email" required>
+      <div class="password-box">
+        <input type="password" id="login-password" placeholder="Password" required>
+        <span class="toggle-password" onclick="togglePassword()">👁</span>
+      </div>
+      <button type="submit">Login</button>
+    </form>
+
+    <div class="extra-links">
+      <a href="#">Forgot Password?</a> | 
+      <a href="#" id="show-signup">Sign Up</a> | 
+      <a href="#">Continue as Guest</a>
+    </div>
+
+    <div class="privacy">
+      🔒 Your data is private & secure
+    </div>
+  </div>
+
+  <!-- Hidden Signup Section -->
+  <div class="login-container" id="signup-container" style="display:none;">
+    <h2>Sign Up</h2>
+    <p>Join CortiCare today</p>
+    <form id="signup-form">
+      <input type="text" id="signup-name" placeholder="Full Name" required>
+      <input type="email" id="signup-email" placeholder="Email" required>
+      <input type="password" id="signup-password" placeholder="Password" required>
+      <button type="submit">Sign Up</button>
+    </form>
+    <div class="extra-links">
+      <a href="#" id="show-login">Already have an account? Login</a>
+    </div>
+  </div>
+
+  <script>
+    // Toggle password visibility
+    function togglePassword() {
+      const passwordField = document.getElementById("login-password");
+      passwordField.type = passwordField.type === "password" ? "text" : "password";
+    }
+
+    // Switch between login & signup
+    const loginContainer = document.querySelector(".login-container");
+    const signupContainer = document.getElementById("signup-container");
+    document.getElementById("show-signup").addEventListener("click", () => {
+      loginContainer.style.display = "none";
+      signupContainer.style.display = "block";
+    });
+    document.getElementById("show-login").addEventListener("click", () => {
+      signupContainer.style.display = "none";
+      loginContainer.style.display = "block";
+    });
+
+    // Handle login
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("login-email").value;
+      const password = document.getElementById("login-password").value;
+
+      const res = await fetch("/login", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({email, password})
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        window.location.href = data.redirect; // ✅ redirect if login works
+      } else {
+        alert(data.message || "Login failed");
+      }
+    });
+
+    // Handle signup
+    document.getElementById("signup-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("signup-name").value;
+      const email = document.getElementById("signup-email").value;
+      const password = document.getElementById("signup-password").value;
+
+      const res = await fetch("/signup", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({name, email, password})
+      });
+
+      const data = await res.json();
+      alert(data.message);
+      if (res.ok && data.success) {
+        signupContainer.style.display = "none";
+        loginContainer.style.display = "block"; // go back to login after signup
+      }
+    });
+  </script>
+</body>
+</html>

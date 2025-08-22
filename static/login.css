@@ -1,0 +1,149 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #e6e6fa, #d8b4fe, #c084fc);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.login-container {
+  background: #faf5ff;
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0px 8px 25px rgba(100, 72, 128, 0.2);
+  width: 350px;
+  text-align: center;
+  border: 1px solid #e9d5ff;
+}
+
+/* Logo + Project Branding */
+.logo-box {
+  background: url("./images/Crop_image_project__2_-removebg-preview.png") no-repeat center;
+  background-size: contain;
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 0.5rem;
+}
+
+.project-name {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #5b21b6;
+  margin: 0;
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+.tagline {
+  font-size: 0.9rem;
+  color: #7c3aed;
+  margin: 0.3rem 0 1rem;
+  text-align: center;
+}
+
+.login-container h2 {
+  margin-bottom: 1rem;
+  color: #5b21b6;
+}
+
+.login-container p {
+  font-size: 0.9rem;
+  color: #7c3aed;
+  margin-bottom: 1.5rem;
+}
+
+.login-container input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 10px;
+  border: 1px solid #d8b4fe;
+  font-size: 1rem;
+  background-color: #f5f3ff;
+  color: #4c1d95;
+}
+
+.login-container input:focus {
+  outline: none;
+  border-color: #a78bfa;
+  box-shadow: 0 0 5px rgba(167, 139, 250, 0.6);
+}
+
+.password-box {
+  position: relative;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #7c3aed;
+}
+
+.login-container button {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.login-container button:hover {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+}
+
+.extra-links {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+}
+
+.extra-links a {
+  color: #6d28d9;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.extra-links a:hover {
+  text-decoration: underline;
+}
+
+.privacy {
+  margin-top: 1.2rem;
+  font-size: 0.75rem;
+  color: #6b21a8;
+}
+
+.unna-regular {
+  font-family: "Unna", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.unna-bold {
+  font-family: "Unna", serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.unna-regular-italic {
+  font-family: "Unna", serif;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.unna-bold-italic {
+  font-family: "Unna", serif;
+  font-weight: 700;
+  font-style: italic;
+}
+

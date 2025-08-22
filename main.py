@@ -1,141 +1,4 @@
-# from flask import Flask, request, render_template, jsonify
-# from flask_sqlalchemy import SQLAlchemy
-# import tensorflow as tf
-# import numpy as np
-# import mne
-# import os
-# from werkzeug.security import generate_password_hash, check_password_hash
-
-# app = Flask(__name__)
-
-
-# # Load trained model
-# model = tf.keras.models.load_model("schizo_model.h5")
-
-# app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://neondb_owner:npg_aTe0ZK9DArWJ@ep-silent-king-adjanc6b-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
-# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-# db = SQLAlchemy(app)
-# if __name__ == "__main__":
-#     with app.app_context():
-#         db.create_all()
-# class LoginCredentials(db.Model):
-#     __tablename__ = "login_credentials"
-#     db.metadata,
-#     autoload_with=db.engine
-# # Preprocessing function (matching training notebook)
-# def preprocess_edf(file_path):
-#     raw = mne.io.read_raw_edf(file_path, preload=True)
-#     data, _ = raw[:, :]  # shape: (channels, samples)
-
-#     # Keep only first 19 channels (to match training)
-#     data = data[:19, :2000]  # (19, 2000)
-
-#     # Normalize per channel
-#     data = (data - np.mean(data, axis=1, keepdims=True)) / (
-#         np.std(data, axis=1, keepdims=True) + 1e-6
-#     )
-
-#     # Transpose -> (time_steps, channels)
-#     data = data.T   # (2000, 19)
-
-#     # Add batch dimension -> (1, 2000, 19)
-#     data = np.expand_dims(data, axis=0).astype(np.float32)
-#     return data
-
-# @app.route("/", methods=["GET", "POST"])
-# def index():
-#     result = None
-#     if request.method == "POST":
-#         if "file" not in request.files:
-#             result = "No file uploaded"
-#         else:
-#             file = request.files["file"]
-#             if file.filename == "":
-#                 result = "No file selected"
-#             else:
-#                 filepath = os.path.join("uploads", file.filename)
-#                 os.makedirs("uploads", exist_ok=True)
-#                 file.save(filepath)
-
-#                 try:
-#                     data = preprocess_edf(filepath)
-#                     prediction = model.predict(data)
-#                     label = np.argmax(prediction, axis=1)[0]
-
-#                     if label == 0:
-#                         result = "Schizophrenia"
-#                     else:
-#                         result = "Healthy Control"
-#                 except Exception as e:
-#                     result = f"Error: {str(e)}"
-
-#     return render_template("loginpage.html", result=result)
-
-# from werkzeug.security import generate_password_hash, check_password_hash
-
-# @app.route("/signup", methods=["POST"])
-# def signup():
-#     data = request.get_json()
-#     name = data.get("name")
-#     email = data.get("email")
-#     password = data.get("password")
-
-#     # Check if email already exists
-#     existing_user = LoginCredentials.query.filter_by(email=email).first()
-#     if existing_user:
-#         return jsonify({"status": "error", "message": "Email already registered"}), 400
-
-#     # Save new user
-#     hashed_pw = generate_password_hash(password)
-#     new_user = LoginCredentials(name=name, email=email, password=hashed_pw)
-#     db.session.add(new_user)
-#     db.session.commit()
-
-#     return jsonify({"status": "success", "message": "User registered!"})
-
-
-# @app.route("/login", methods=["POST"])
-# def login():
-#     data = request.get_json()
-#     email = data.get("email")
-#     password = data.get("password")
-
-#     user = LoginCredentials.query.filter_by(email=email).first()
-
-#     if user and check_password_hash(user.password, password):
-#         return jsonify({"status": "success", "message": "Login successful!"})
-#     else:
-#         return jsonify({"status": "error", "message": "Invalid email or password"}), 401
-
-
-# @app.route("/predict", methods=["POST"])
-# def predict():
-#     if "file" not in request.files:
-#         return jsonify({"error": "No file uploaded"}), 400
-
-#     file = request.files["file"]
-
-#     if file.filename == "":
-#         return jsonify({"error": "No selected file"}), 400
-
-#     file_path = os.path.join("uploads", file.filename)
-#     os.makedirs("uploads", exist_ok=True)
-#     file.save(file_path)
-
-#     # Preprocess EDF file
-#     X = preprocess_edf(file_path)
-
-#     # Predict
-#     preds = model.predict(X)
-#     result = "Schizophrenic" if preds[0][0] > 0.5 else "Healthy"
-
-#     return jsonify({"prediction": result, "raw_output": preds.tolist()})
-
-# if __name__ == "__main__":
-#     app.run(debug=True)
-
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, request, render_template, jsonify, url_for, redirect
 import tensorflow as tf
 import numpy as np
 import mne
@@ -162,7 +25,7 @@ def get_db_connection():
 
 @app.route("/")
 def index():
-    return render_template("loginpage.html")
+    return render_template("login.html")
 
 def preprocess_edf(file_path):
     raw = mne.io.read_raw_edf(file_path, preload=True)
@@ -183,6 +46,28 @@ def preprocess_edf(file_path):
     data = np.expand_dims(data, axis=0).astype(np.float32)
     return data
 
+@app.route("/predict", methods=["POST"])
+def predict():
+    if "file" not in request.files:
+        return jsonify({"error": "No file uploaded"}), 400
+
+    file = request.files["file"]
+
+    if file.filename == "":
+        return jsonify({"error": "No selected file"}), 400
+
+    file_path = os.path.join("uploads", file.filename)
+    os.makedirs("uploads", exist_ok=True)
+    file.save(file_path)
+
+    # Preprocess EDF file
+    X = preprocess_edf(file_path)
+
+    # Predict
+    preds = model.predict(X)
+    result = "Schizophrenic" if preds[0][0] > 0.5 else "Healthy"
+
+    return jsonify({"prediction": result, "raw_output": preds.tolist()})
 
 @app.route("/signup", methods=["POST"])
 def signup():
@@ -226,12 +111,12 @@ def login():
         conn.close()
 
         if user and check_password_hash(user["password"], password):
-            return jsonify({"message": "Login successful"}), 200
+            return jsonify({"success": True, "redirect": "/upload"}), 200
         else:
             return jsonify({"error": "Invalid credentials"}), 401
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
+
 @app.route("/upload", methods=["GET", "POST"])
 def upload():
     result = None
