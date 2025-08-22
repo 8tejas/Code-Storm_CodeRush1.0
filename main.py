@@ -47,6 +47,10 @@ def preprocess_edf(file_path):
     data = np.expand_dims(data, axis=0).astype(np.float32)
     return data
 
+@app.route("/report")
+def report():
+    return render_template("report.html")
+
 @app.route("/predict", methods=["POST"])
 def predict():
     if "file" not in request.files:
