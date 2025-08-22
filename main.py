@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, jsonify, url_for, redirect
+from flask import Flask, request, render_template, jsonify, url_for, redirect, session
 import tensorflow as tf
 import numpy as np
 import mne
@@ -6,9 +6,10 @@ import os
 import psycopg2
 import psycopg2.extras
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
 
 app = Flask(__name__)
-
+app.secret_key = "supersecretkey" 
 # Load trained model
 model = tf.keras.models.load_model("schizo_model.h5")
 
@@ -67,6 +68,19 @@ def predict():
     preds = model.predict(X)
     confidence = float(preds[0][0])  # raw probability
     result = "Schizophrenic" if confidence > 0.5 else "Healthy"
+    if "user_id" in session:
+        try:
+            conn = get_db_connection()
+            cur = conn.cursor()
+            cur.execute(
+                "INSERT INTO userRecords (userId, predictionConfidence, predictionDate) VALUES (%s, %s, %s)",
+                (session["user_id"], confidence, datetime.now())
+            )
+            conn.commit()
+            cur.close()
+            conn.close()
+        except Exception as e:
+            print("DB insert error:", e)
 
     return render_template("result.html", label=result, confidence=confidence)
 @app.route("/signup", methods=["POST"])
@@ -111,6 +125,7 @@ def login():
         conn.close()
 
         if user and check_password_hash(user["password"], password):
+            session["user_id"] = user["id"]
             return jsonify({"success": True, "redirect": "/upload"}), 200
         else:
             return jsonify({"error": "Invalid credentials"}), 401
