@@ -1,71 +1,90 @@
-from flask import Flask, request, render_template
-import os
+from flask import Flask, request, render_template, jsonify
+import tensorflow as tf
 import numpy as np
 import mne
-import tensorflow as tf
-from werkzeug.utils import secure_filename
+import os
 
 app = Flask(__name__)
-UPLOAD_FOLDER = 'uploads'
-ALLOWED_EXTENSIONS = {'edf'}
 
-MODEL_PATH = "schizo_model.h5"
-model = tf.keras.models.load_model(MODEL_PATH)
+# Load trained model
+model = tf.keras.models.load_model("schizo_model.h5")
 
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+# Preprocessing function (matching training notebook)
 
-# Utility: check allowed file
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+def preprocess_edf(file_path):
+    raw = mne.io.read_raw_edf(file_path, preload=True)
+    data, _ = raw[:, :]  # shape: (channels, samples)
 
-# Preprocess EEG for model
-def preprocess_for_model(filepath):
-    raw = mne.io.read_raw_edf(filepath, preload=True, verbose=False)
-    raw.filter(0.5, 40., verbose=False)
-    raw.notch_filter(50, verbose=False)
-    raw.resample(200, npad="auto", verbose=False)
-    data = raw.get_data()
+    # Keep only first 19 channels (to match training)
+    data = data[:19, :2000]  # (19, 2000)
 
-    n_channels, n_samples = data.shape
-    window = 2000  # 10s at 200Hz
-    if n_samples < window:
-        pad = np.zeros((n_channels, window - n_samples))
-        data = np.concatenate([data, pad], axis=1)
-    else:
-        data = data[:, :window]
+    # Normalize per channel
+    data = (data - np.mean(data, axis=1, keepdims=True)) / (
+        np.std(data, axis=1, keepdims=True) + 1e-6
+    )
 
-    X = data[np.newaxis, ..., np.newaxis]
-    return X
+    # Transpose -> (time_steps, channels)
+    data = data.T   # (2000, 19)
 
-@app.route('/')
+    # Add batch dimension -> (1, 2000, 19)
+    data = np.expand_dims(data, axis=0).astype(np.float32)
+
+    return data
+
+@app.route("/", methods=["GET", "POST"])
 def index():
-    return render_template('index.html')
+    result = None
+    if request.method == "POST":
+        if "file" not in request.files:
+            result = "No file uploaded"
+        else:
+            file = request.files["file"]
+            if file.filename == "":
+                result = "No file selected"
+            else:
+                filepath = os.path.join("uploads", file.filename)
+                os.makedirs("uploads", exist_ok=True)
+                file.save(filepath)
 
-@app.route('/predict', methods=['POST'])
+                try:
+                    data = preprocess_edf(filepath)
+                    prediction = model.predict(data)
+                    label = np.argmax(prediction, axis=1)[0]
+
+                    if label == 0:
+                        result = "Schizophrenia"
+                    else:
+                        result = "Healthy Control"
+                except Exception as e:
+                    result = f"Error: {str(e)}"
+
+    return render_template("index.html", result=result)
+
+
+@app.route("/predict", methods=["POST"])
 def predict():
-    if 'file' not in request.files:
-        return 'No file part'
-    file = request.files['file']
-    if file.filename == '' or not allowed_file(file.filename):
-        return 'Invalid file type'
+    if "file" not in request.files:
+        return jsonify({"error": "No file uploaded"}), 400
 
-    filepath = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(file.filename))
-    file.save(filepath)
+    file = request.files["file"]
 
-    X = preprocess_for_model(filepath)
-    pred = model.predict(X)
+    if file.filename == "":
+        return jsonify({"error": "No selected file"}), 400
 
-    if pred.shape[-1] == 1:  
-        prob = float(pred[0][0])
-        label = 'Schizophrenia' if prob > 0.5 else 'Healthy'
-        confidence = prob if label == 'Schizophrenia' else 1 - prob
-    else:  # softmax
-        label_idx = np.argmax(pred)
-        label = 'Schizophrenia' if label_idx == 1 else 'Healthy'
-        confidence = float(np.max(pred))
+    file_path = os.path.join("uploads", file.filename)
+    os.makedirs("uploads", exist_ok=True)
+    file.save(file_path)
 
-    return render_template('result.html', label=label, confidence=confidence)
+    # Preprocess EDF file
+    X = preprocess_edf(file_path)
 
-if __name__ == '__main__':
+    # Predict
+    preds = model.predict(X)
+    result = "Schizophrenic" if preds[0][0] > 0.5 else "Healthy"
+
+    return jsonify({"prediction": result, "raw_output": preds.tolist()})
+
+
+if __name__ == "__main__":
     app.run(debug=True)
+
