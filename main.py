@@ -46,6 +46,9 @@ def preprocess_edf(file_path):
     # Add batch dimension -> (1, 2000, 19)
     data = np.expand_dims(data, axis=0).astype(np.float32)
     return data
+@app.route("/about")
+def about():
+    return render_template("about.html")
 
 @app.route("/report")
 def report():
