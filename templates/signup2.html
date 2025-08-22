@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign Up</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #e6e6fa, #d8b4fe, #c084fc);;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+   .signup-container {
+    background: url('https://images.rawpixel.com/image_800/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvcm00OTQtYmctMDA0Yy14LmpwZw.jpg') no-repeat center center;
+    background-size: cover;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    width: 350px;
+    text-align: center;
+    color: white;
+  }
+  h2 {
+    text-align: center;
+    color: #7b1fa2;
+    margin-bottom: 25px;
+  }
+  input[type="text"], input[type="email"], input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0 20px 0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+  }
+  .show-password {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+  }
+  .show-password input {
+    margin-right: 8px;
+  }
+  button {
+    width: 100%;
+    padding: 12px;
+    background-color: #9c27b0;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  button:hover {
+    background-color: #7b1fa2;
+  }
+  .success {
+    text-align: center;
+    color: green;
+    margin-top: 15px;
+  }
+  .error {
+    color: red;
+    font-size: 14px;
+    margin-top: -15px;
+    margin-bottom: 15px;
+  }
+</style>
+</head>
+<body>
+
+<div class="signup-container">
+  <h2>Sign Up</h2>
+  <form id="signupForm">
+    <input type="text" id="username" placeholder="Username" required>
+    <div class="error" id="usernameError"></div>
+
+    <input type="email" id="email" placeholder="Email" required>
+    <div class="error" id="emailError"></div>
+
+    <input type="password" id="password" placeholder="Password" required>
+    <div class="error" id="passwordError"></div>
+
+    <div class="show-password">
+      <input type="checkbox" id="togglePassword"> Show Password
+    </div>
+
+    <button type="submit">Sign Up</button>
+    <div class="success" id="successMsg"></div>
+  </form>
+</div>
+
+<script>
+  const form = document.getElementById('signupForm');
+  const username = document.getElementById('username');
+  const email = document.getElementById('email');
+  const password = document.getElementById('password');
+  const togglePassword = document.getElementById('togglePassword');
+
+  const usernameError = document.getElementById('usernameError');
+  const emailError = document.getElementById('emailError');
+  const passwordError = document.getElementById('passwordError');
+  const successMsg = document.getElementById('successMsg');
+
+  togglePassword.addEventListener('change', () => {
+    password.type = togglePassword.checked ? 'text' : 'password';
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    let valid = true;
+    usernameError.textContent = '';
+    emailError.textContent = '';
+    passwordError.textContent = '';
+    successMsg.textContent = '';
+
+    if (username.value.trim() === '') {
+      usernameError.textContent = 'Username is required';
+      valid = false;
+    }
+
+    if (!email.value.match(/^[^ ]+@[^ ]+\.[a-z]{2,3}$/)) {
+      emailError.textContent = 'Enter a valid email';
+      valid = false;
+    }
+
+    if (password.value.length < 6) {
+      passwordError.textContent = 'Password must be at least 6 characters';
+      valid = false;
+    }
+
+    if (valid) {
+      // Save to localStorage
+      const userData = {
+        username: username.value,
+        email: email.value,
+        password: password.value
+      };
+      localStorage.setItem('user', JSON.stringify(userData));
+      successMsg.textContent = 'Sign Up Successful!';
+      form.reset();
+    }
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Schizophrenia Report</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #e6e6fa, #d8b4fe, #c084fc);
+    color: white;
+    display: block;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  /* Navbar */
+  nav {
+    width: 98%;
+    max-width: 1400px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 auto 30px auto;
+    position: relative;
+  }
+
+  .hamburger {
+    font-size: 28px;
+    cursor: pointer;
+  }
+
+  .logo img {
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
+  }
+
+  .menu {
+    display: none;
+    position: absolute;
+    top: 70px;
+    left: 0;
+    background: rgba(230, 210, 255, 0.95);
+    width: 220px;
+    border-radius: 0 0 10px 10px;
+    padding: 10px;
+    flex-direction: column;
+    z-index: 100;
+  }
+
+  .menu button {
+    padding: 10px;
+    margin: 5px 0;
+    border: none;
+    border-radius: 6px;
+    background: #d8b4fe;
+    color: #4b0082;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.3s;
+  }
+
+  .menu button:hover {
+    background: #e6c8ff;
+  }
+
+  /* Greeting */
+  .greeting {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 5px rgba(0,0,0,0.3);
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Report container */
+  .container {
+    width: 90%;
+    max-width: 1000px;
+    background: rgba(255,255,255,0.1);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    backdrop-filter: blur(10px);
+    text-align: center;
+    margin: 0 auto; /* centers container */
+  }
+
+  canvas {
+    width: 100% !important;
+    height: 400px !important;
+    background: rgba(255,255,255,0.1);
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+  }
+
+  .improvement {
+    margin-top: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #fc88fc;
+  }
+
+  @media (max-width: 600px) {
+    nav {
+      flex-wrap: wrap;
+      width: 100%;
+    }
+    .menu {
+      width: 160px;
+    }
+    .menu button {
+      font-size: 12px;
+      padding: 6px;
+    }
+    canvas {
+      height: 300px !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav>
+  <div class="hamburger" onclick="toggleMenu()">☰</div>
+  <div class="logo">
+    <img src="./images/Crop_image_project__2_-removebg-preview.png" alt="Logo">
+  </div>
+
+  <div class="menu" id="menu">
+    <button onclick="window.location.href='home.html'">Home</button>
+    <button onclick="window.location.href='about.html'">About</button>
+  </div>
+</nav>
+
+<!-- Greeting -->
+<div class="greeting">
+  Hello, <span id="userName"></span>!
+</div>
+
+<!-- Report container -->
+<div class="container">
+  <h2>Your Schizophrenia Report</h2>
+  <canvas id="schizoChart"></canvas>
+  <div class="improvement" id="improvementText"></div>
+</div>
+
+<script>
+  const name = localStorage.getItem('userName') || 'User';
+  document.getElementById('userName').textContent = name;
+
+  function toggleMenu() {
+    const menu = document.getElementById('menu');
+    menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+  }
+
+  let previousScore = 65;
+  let currentScore = 50;
+
+  const ctx = document.getElementById('schizoChart').getContext('2d');
+  const schizoChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Previous', 'Current'],
+      datasets: [{
+        label: 'Schizophrenia Cases (%)',
+        data: [previousScore, currentScore],
+        backgroundColor: ['#bc9ffd', '#fc88fc'],
+        borderColor: '#000',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: { beginAtZero: true, title: { display: true, text: 'Percentage (%)' } },
+        x: { title: { display: true, text: 'Timeline' } }
+      }
+    }
+  });
+
+  let improvementText = document.getElementById("improvementText");
+  if (currentScore < previousScore) {
+    improvementText.innerText = "✅ Improvement observed! Percentage decreased.";
+  } else if (currentScore > previousScore) {
+    improvementText.innerText = "⚠️ Increase observed. More cases detected.";
+  } else {
+    improvementText.innerText = "ℹ️ No change in cases.";
+  }
+</script>
+
+</body>
+</html>

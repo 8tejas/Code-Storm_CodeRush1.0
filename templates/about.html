@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>About Schizophrenia</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f3e8ff, #e0c7ff, #d8b4fe);
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .page-wrapper {
+    width: 100%;
+    max-width: 900px;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  .container {
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    box-sizing: border-box;
+    text-align: center;
+  }
+
+  .container h2 {
+    color: #4b0082;
+    margin-bottom: 15px;
+  }
+
+  .columns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 20px;
+    justify-content: center;
+  }
+
+  .column {
+    flex: 1 1 250px;
+    background: rgba(255,255,255,0.15);
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+
+  .column h3 {
+    color: #6a1b9a;
+    margin-bottom: 10px;
+  }
+
+  .column ul {
+    list-style-type: disc;
+    padding-left: 20px;
+    text-align: left;
+  }
+
+  @media (max-width: 600px) {
+    .columns {
+      flex-direction: column;
+      gap: 15px;
+    }
+  }
+
+  .back-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    background: #6a1b9a;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  .back-button:hover {
+    background: #8e24aa;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-wrapper">
+  <div class="container">
+    <h2>About Schizophrenia</h2>
+    <p>Schizophrenia is a mental health condition that affects how a person thinks, feels, and behaves. It is not a bad thing, and with a few precautions, it can be managed well. Many people live happy, productive lives with the right support and care.</p>
+
+    <div class="columns">
+      <div class="column">
+        <h3>Tips & Tricks</h3>
+        <ul>
+          <li>Follow your treatment plan regularly.</li>
+          <li>Maintain a healthy sleep routine.</li>
+          <li>Keep stress levels low through meditation or hobbies.</li>
+          <li>Stay socially connected with supportive people.</li>
+          <li>Engage in light physical activity regularly.</li>
+        </ul>
+      </div>
+
+      <div class="column">
+        <h3>Key Points</h3>
+        <ul>
+          <li>Schizophrenia is manageable.</li>
+          <li>Early intervention improves outcomes.</li>
+          <li>It does not define you.</li>
+          <li>Support from family and professionals helps a lot.</li>
+          <li>Healthy routines improve quality of life.</li>
+        </ul>
+      </div>
+    </div>
+
+    <button class="back-button" onclick="window.location.href='home.html'">Back to Home</button>
+  </div>
+</div>
+
+</body>
+</html>

@@ -159,7 +159,7 @@ def upload():
                 except Exception as e:
                     result = f"Error: {str(e)}"
 
-    return render_template("index.html", result=result)
+    return render_template("home.html", result=result)
 
 if __name__ == "__main__":
     app.run(debug=True)
