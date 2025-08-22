@@ -1,4 +1,5 @@
 from flask import Flask, request, render_template, jsonify
+from flask_sqlalchemy import SQLAlchemy
 import tensorflow as tf
 import numpy as np
 import mne
@@ -8,6 +9,11 @@ app = Flask(__name__)
 
 # Load trained model
 model = tf.keras.models.load_model("schizo_model.h5")
+
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://neondb_owner:npg_aTe0ZK9DArWJ@ep-silent-king-adjanc6b-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
 
 # Preprocessing function (matching training notebook)
 
@@ -28,7 +34,6 @@ def preprocess_edf(file_path):
 
     # Add batch dimension -> (1, 2000, 19)
     data = np.expand_dims(data, axis=0).astype(np.float32)
-
     return data
 
 @app.route("/", methods=["GET", "POST"])
